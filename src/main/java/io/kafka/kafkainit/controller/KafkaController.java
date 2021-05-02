@@ -28,15 +28,23 @@ public class KafkaController {
 
     @RequestMapping(value = "/send", method = RequestMethod.GET)
     public String getString(@RequestParam String param) {
+
+        //Creating a propery object
         props.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootStrapServer);
         props.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         props.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-        
-        ProducerRecord record = new ProducerRecord("FIRST", param);
-        KafkaProducer producer = new KafkaProducer(props);
+
+        //Create a producer record
+        // ProducerRecord record = new ProducerRecord("FIRST", param);
+        ProducerRecord<String, String> record = new ProducerRecord<String, String>("FIRST", param);
+
+        //Creating a Producer
+        // KafkaProducer producer = new KafkaProducer(props);
+        KafkaProducer<String, String> producer = new KafkaProducer<String, String>(props);
+
+        //Sending the message
         producer.send(record);
         producer.flush();
-
         return "SENT";
     }
 }
