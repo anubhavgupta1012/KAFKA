@@ -1,8 +1,10 @@
 package io.kafka.kafkainit.controller;
 
+import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
@@ -43,8 +45,21 @@ public class KafkaController {
         KafkaProducer<String, String> producer = new KafkaProducer<String, String>(props);
 
         //Sending the message
-        producer.send(record);
-        producer.flush();
+        producer.send(record, new Callback() {
+            @Override
+            public void onCompletion(RecordMetadata metadata, Exception e) {
+                if (e == null) {
+                    System.out.println("RECORD details are as follows: \n" +
+                        "topic: " + metadata.topic() + "\n" +
+                        "Offset: " + metadata.offset() + "\n" +
+                        "partition: " + metadata.partition() + "\n" +
+                        "timestamp: " + metadata.timestamp());
+                } else {
+                    logger.error("Exception occurred while sending the data", e);
+                }
+            }
+        });
+        producer.close();
         return "SENT";
     }
 }
