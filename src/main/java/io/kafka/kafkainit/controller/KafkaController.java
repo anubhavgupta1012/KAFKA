@@ -36,9 +36,11 @@ public class KafkaController {
         props.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         props.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
 
+
         //Create a producer record
         // ProducerRecord record = new ProducerRecord("FIRST", param);
-        ProducerRecord<String, String> record = new ProducerRecord<String, String>("FIRST", param);
+        String key = "key_" + param.length();
+        ProducerRecord<String, String> record = new ProducerRecord<String, String>("FIRST", key, param);
 
         //Creating a Producer
         // KafkaProducer producer = new KafkaProducer(props);
