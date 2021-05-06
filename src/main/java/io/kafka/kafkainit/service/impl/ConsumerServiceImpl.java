@@ -5,6 +5,7 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,14 +31,22 @@ public class ConsumerServiceImpl implements ConsumerService {
         consumerProperties.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootStrapServer);
         consumerProperties.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         consumerProperties.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-        consumerProperties.setProperty(ConsumerConfig.GROUP_ID_CONFIG, "GFIRST");
+        //consumerProperties.setProperty(ConsumerConfig.GROUP_ID_CONFIG, "GFIRST");
         consumerProperties.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
 
         //create consumer
         KafkaConsumer<String, String> consumer = new KafkaConsumer<String, String>(consumerProperties);
 
-        //subscribe consumer to topic
-        consumer.subscribe(Collections.singleton("FIRST"));
+        /*//subscribe consumer to topic
+        consumer.subscribe(Collections.singleton("FIRST"));*/
+
+        //assign & seek are generally used for consuming messages from a definite TopicPartition from a definite offset
+        TopicPartition topicPartition = new TopicPartition("FIRST", 0);
+        consumer.assign(Collections.singleton(topicPartition));
+
+        //seek
+        long offsettoReadFrom = 20;
+        consumer.seek(topicPartition,offsettoReadFrom);
 
         //poll the new Data
         while (true) {
