@@ -39,8 +39,6 @@ public class ConsumerServiceImpl implements ConsumerService {
         //subscribe consumer to topic
         consumer.subscribe(Collections.singleton("FIRST"));
 
-        StringBuilder stringBuilder = new StringBuilder();
-
         //poll the new Data
         while (true) {
             ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
@@ -51,9 +49,8 @@ public class ConsumerServiceImpl implements ConsumerService {
                     "\nvalue : " + record.value() +
                     "\nPartition : " + record.partition() +
                     "\n offset : " + record.offset();
-                stringBuilder.append(result);
+                System.out.println(" RESULT :" + result);
             }
-            System.out.println("FINAL RESULT :" + stringBuilder);
         }
 
     }
