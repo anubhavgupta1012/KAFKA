@@ -80,7 +80,7 @@ public class TwitterProducer {
         Hosts hosebirdHosts = new HttpHosts(Constants.STREAM_HOST);
         StatusesFilterEndpoint hosebirdEndpoint = new StatusesFilterEndpoint();
         // Optional: set up some followings and track terms
-        List<String> terms = Lists.newArrayList("qwerty654asdfre ");
+        List<String> terms = Lists.newArrayList("covid ", "cricket", "canada");
         hosebirdEndpoint.trackTerms(terms);
 
         // These secrets should be read from a config file
@@ -109,6 +109,11 @@ public class TwitterProducer {
         producerProperties.setProperty(ProducerConfig.ACKS_CONFIG, "all");
         producerProperties.setProperty(ProducerConfig.RETRIES_CONFIG, String.valueOf(Integer.MAX_VALUE));
         producerProperties.setProperty(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, String.valueOf(5));
+
+        //high throughput producer (at the cost of a littlebit of latency an CPU usage)
+        producerProperties.setProperty(ProducerConfig.COMPRESSION_TYPE_CONFIG, "snappy");
+        producerProperties.setProperty(ProducerConfig.LINGER_MS_CONFIG, String.valueOf(2 * 1000));  // 2 Sec
+        producerProperties.setProperty(ProducerConfig.BATCH_SIZE_CONFIG, String.valueOf(32 * 8 * 1024));  //32*8 kb
 
         //Creating a Producer
         return new KafkaProducer<String, String>(producerProperties);
