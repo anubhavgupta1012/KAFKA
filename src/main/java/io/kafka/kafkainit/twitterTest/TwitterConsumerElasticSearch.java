@@ -1,5 +1,6 @@
 package io.kafka.kafkainit.twitterTest;
 
+import com.google.gson.JsonParser;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -37,7 +38,7 @@ public class TwitterConsumerElasticSearch {
             ConsumerRecords<String, String> records = kafkaConsumer.poll(Duration.ofMillis(100));
             for (ConsumerRecord<String, String> record : records) {
                 try {
-                    IndexRequest indexRequest = new IndexRequest("twitter", "randomData")
+                    IndexRequest indexRequest = new IndexRequest("twitter", "randomData", getTweetId(record.value()))
                         .source(record.value(), XContentType.JSON);
                     IndexResponse indexResponse = elasticSearchClient.index(indexRequest, RequestOptions.DEFAULT);
                     String id = indexResponse.getId();
@@ -50,6 +51,10 @@ public class TwitterConsumerElasticSearch {
         }
         //closing the client
         //elasticSearchClient.close();
+    }
+
+    private static String getTweetId(String tweet) {
+        return JsonParser.parseString(tweet).getAsJsonObject().get("id_str").toString();
     }
 
     private static RestHighLevelClient getElasticSearchClient() {
