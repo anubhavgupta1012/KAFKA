@@ -25,7 +25,7 @@ public class ProducerServiceImpl implements ProducerService {
 
     @Override
     public String produce(String param, Properties producerProperties) {
-        //Creating a propery object
+        //Creating a property object
         producerProperties.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootStrapServer);
         producerProperties.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         producerProperties.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
