@@ -36,6 +36,7 @@ public class TwitterConsumerElasticSearch {
 
         while (true) {
             ConsumerRecords<String, String> records = kafkaConsumer.poll(Duration.ofMillis(100));
+            logger.info("{} number of records are polled", records.count());
             for (ConsumerRecord<String, String> record : records) {
                 try {
                     IndexRequest indexRequest = new IndexRequest("twitter", "randomData", getTweetId(record.value()))
@@ -48,6 +49,8 @@ public class TwitterConsumerElasticSearch {
                     logger.error("exception occurred while pushing the data to elastic search :{}", e);
                 }
             }
+            kafkaConsumer.commitSync();
+            logger.info("committed offset");
         }
         //closing the client
         //elasticSearchClient.close();
@@ -77,6 +80,7 @@ public class TwitterConsumerElasticSearch {
         consumerProperties.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         consumerProperties.setProperty(ConsumerConfig.GROUP_ID_CONFIG, "GFIRST");
         consumerProperties.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+        consumerProperties.setProperty(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false"); //disable auto commit offset
 
         //create consumer
         KafkaConsumer<String, String> consumer = new KafkaConsumer<>(consumerProperties);
