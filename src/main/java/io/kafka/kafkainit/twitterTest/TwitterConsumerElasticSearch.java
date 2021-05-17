@@ -11,8 +11,9 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.elasticsearch.action.bulk.BulkRequest;
+import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
@@ -37,20 +38,24 @@ public class TwitterConsumerElasticSearch {
         while (true) {
             ConsumerRecords<String, String> records = kafkaConsumer.poll(Duration.ofMillis(100));
             logger.info("{} number of records are polled", records.count());
+            BulkRequest bulkRequest = new BulkRequest();
+            if (records.count()>0){
             for (ConsumerRecord<String, String> record : records) {
                 try {
                     IndexRequest indexRequest = new IndexRequest("twitter", "randomData", getTweetId(record.value()))
                         .source(record.value(), XContentType.JSON);
-                    IndexResponse indexResponse = elasticSearchClient.index(indexRequest, RequestOptions.DEFAULT);
-                    String id = indexResponse.getId();
-                    logger.info("\nDHEERAJ id :{}", id);
-                    Thread.sleep(1000);
-                } catch (InterruptedException | IOException e) {
+                    bulkRequest.add(indexRequest);
+                } catch (Exception e) {
                     logger.error("exception occurred while pushing the data to elastic search :{}", e);
                 }
             }
+            try {
+                BulkResponse bulkResponse = elasticSearchClient.bulk(bulkRequest, RequestOptions.DEFAULT);
+            } catch (IOException e) {
+                logger.error("exception occurred while pushing data in bulk form :{}", e);
+            }
             kafkaConsumer.commitSync();
-            logger.info("committed offset");
+            logger.info("committed offset");}
         }
         //closing the client
         //elasticSearchClient.close();
