@@ -8,6 +8,8 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.json.JSONObject;
+import org.json.XML;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -98,12 +100,11 @@ public class ConsumerServiceImpl implements ConsumerService {
         while (true) {
             ConsumerRecords<String, Employee> records = consumer.poll(Duration.ofMillis(100));
             for (ConsumerRecord<String, Employee> record : records) {
-
-                String result = "name : " + record.value().getName() +
-                    "\nid : " + record.value().getId();
-                System.out.println(" RESULT :" + result);
-                Employee value = record.value();
-                System.out.println("Employee\t" + value);
+                Employee employee = record.value();
+                JSONObject json = new JSONObject(employee);
+                String xml = XML.toString(json);
+                System.out.println(employee);
+                System.out.println(xml);
             }
         }
     }
