@@ -36,7 +36,7 @@ public class ProducerServiceImpl implements ProducerService {
         //Create a producer record
         // ProducerRecord record = new ProducerRecord("FIRST", param);
         String key = "key_" + param.length();
-        ProducerRecord<String, String> record = new ProducerRecord<String, String>("FIRST", key, param);
+        ProducerRecord<String, String> record = new ProducerRecord<String, String>("TESTTOPIC", key, param);
 
         //Creating a Producer
         // KafkaProducer producer = new KafkaProducer(props);
