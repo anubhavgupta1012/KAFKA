@@ -1,12 +1,11 @@
 package io.kafka.kafkainit.service;
 
 import io.kafka.kafkainit.controller.pojo.Employee;
-
-import java.util.Properties;
+import io.kafka.kafkainit.controller.pojo.ProducerMessage;
 
 public interface ProducerService {
 
-    String produce(String param, Properties producerProperties);
+    String produce(String param, ProducerMessage message);
 
-    String sendObject(Employee employee, Properties producerProperties);
+    String sendObject(Employee employee);
 }

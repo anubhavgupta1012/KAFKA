@@ -1,6 +1,7 @@
 package io.kafka.kafkainit.service.impl;
 
 import io.kafka.kafkainit.controller.pojo.Employee;
+import io.kafka.kafkainit.controller.pojo.ProducerMessage;
 import io.kafka.kafkainit.network.EmpSerializer;
 import io.kafka.kafkainit.service.ProducerService;
 import org.apache.kafka.clients.producer.Callback;
@@ -25,8 +26,10 @@ public class ProducerServiceImpl implements ProducerService {
     @Value("${bootstrap-servers}")
     private String bootStrapServer;
 
+    Properties producerProperties = new Properties();
+
     @Override
-    public String produce(String param, Properties producerProperties) {
+    public String produce(String topic, ProducerMessage message) {
         //Creating a property object
         producerProperties.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootStrapServer);
         producerProperties.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
@@ -35,8 +38,9 @@ public class ProducerServiceImpl implements ProducerService {
 
         //Create a producer record
         // ProducerRecord record = new ProducerRecord("FIRST", param);
-        String key = "key_" + param.length();
-        ProducerRecord<String, String> record = new ProducerRecord<String, String>("TESTTOPIC", key, param);
+        String msg = message.getMsg();
+        String key = "key_" + msg.length();
+        ProducerRecord<String, String> record = new ProducerRecord<String, String>(topic, key, msg);
 
         //Creating a Producer
         // KafkaProducer producer = new KafkaProducer(props);
@@ -47,7 +51,7 @@ public class ProducerServiceImpl implements ProducerService {
             @Override
             public void onCompletion(RecordMetadata metadata, Exception e) {
                 if (e == null) {
-                    System.out.println("RECORD details are as follows: \n" +
+                    System.out.println(" Producer details are as follows: \n" +
                         "topic: " + metadata.topic() + "\n" +
                         "Offset: " + metadata.offset() + "\n" +
                         "partition: " + metadata.partition() + "\n" +
@@ -62,7 +66,7 @@ public class ProducerServiceImpl implements ProducerService {
     }
 
     @Override
-    public String sendObject(Employee employee, Properties producerProperties) {
+    public String sendObject(Employee employee) {
         //Creating a property object
         producerProperties.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootStrapServer);
         producerProperties.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());

@@ -35,19 +35,19 @@ public class ConsumerServiceImpl implements ConsumerService {
     private String customObjectTopicGroup;
 
     @Override
-    public String consume() {
+    public String consume(String topic) {
         Properties consumerProperties = new Properties();
         consumerProperties.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootStrapServer);
         consumerProperties.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         consumerProperties.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-        consumerProperties.setProperty(ConsumerConfig.GROUP_ID_CONFIG, "GTESTTOPIC");
+        consumerProperties.setProperty(ConsumerConfig.GROUP_ID_CONFIG, ("G" + topic));
         consumerProperties.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
 
         //create consumer
         KafkaConsumer<String, String> consumer = new KafkaConsumer<String, String>(consumerProperties);
 
         //subscribe consumer to topic
-        consumer.subscribe(Collections.singleton("TESTTOPIC"));
+        consumer.subscribe(Collections.singleton(topic));
 
         /*assign & seek are generally used for consuming messages from a definite TopicPartition from a definite offset
         TopicPartition topicPartition = new TopicPartition("FIRST", 0);
@@ -60,17 +60,15 @@ public class ConsumerServiceImpl implements ConsumerService {
         //poll the new Data
         while (true) {
             ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
-
             for (ConsumerRecord<String, String> record : records) {
 
-                String result = "Key : " + record.key() +
-                    "\nvalue : " + record.value() +
-                    "\nPartition : " + record.partition() +
-                    "\n offset : " + record.offset();
-                System.out.println(" RESULT :" + result);
+                String result =/* "Key : " + record.key() +*/
+                    "\nvalue : " + record.value()  /* +
+                  "\nPartition : " + record.partition() +
+                    "\n offset : " + record.offset()*/;
+                System.out.println("\n\n\n Consumer Result :" + result + "\n\n\n");
             }
         }
-
     }
 
     @Override
