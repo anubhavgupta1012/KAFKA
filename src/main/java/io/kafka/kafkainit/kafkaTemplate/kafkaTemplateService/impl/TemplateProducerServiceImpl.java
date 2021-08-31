@@ -4,6 +4,8 @@ import io.kafka.kafkainit.controller.pojo.Employee;
 import io.kafka.kafkainit.kafkaTemplate.kafkaTemplateService.TemplateProducerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
@@ -22,10 +24,11 @@ public class TemplateProducerServiceImpl implements TemplateProducerService {
     private KafkaTemplate<String, Employee> kafkaTemplate;
 
     @Override
-    public void publishMessages(Employee employee) throws ExecutionException, InterruptedException {
+    public ResponseEntity<Employee> publishMessages(Employee employee) throws ExecutionException, InterruptedException {
         //it will return a Future object and is Async. Statement below this line will be called irrespective of the
         // value inside this future object
         ListenableFuture<SendResult<String, Employee>> result = kafkaTemplate.send(topicName, employee);
+        final boolean[] pass = new boolean[1];
 
         //while this will result Result object & is Sync. Statement below this line won't be called
         // until kafkaTemplate.send(topicName, employee).get() will be calculated.
@@ -39,7 +42,9 @@ public class TemplateProducerServiceImpl implements TemplateProducerService {
             @Override
             public void onSuccess(SendResult<String, Employee> result1) {
                 System.out.println(result1.getProducerRecord().value());
+                pass[0] = true;
             }
         });
+        return new ResponseEntity<>(employee, HttpStatus.ACCEPTED);
     }
 }
