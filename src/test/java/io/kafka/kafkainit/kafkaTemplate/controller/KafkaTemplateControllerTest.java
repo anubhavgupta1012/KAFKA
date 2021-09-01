@@ -2,6 +2,7 @@ package io.kafka.kafkainit.kafkaTemplate.controller;
 
 import io.kafka.kafkainit.controller.pojo.Employee;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpEntity;
@@ -12,8 +13,12 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class KafkaTemplateControllerTest {
-    private TestRestTemplate testRestTemplate = new TestRestTemplate();
+
+    @Autowired
+    private TestRestTemplate testRestTemplate;
 
     @Test
     public void publish() {
