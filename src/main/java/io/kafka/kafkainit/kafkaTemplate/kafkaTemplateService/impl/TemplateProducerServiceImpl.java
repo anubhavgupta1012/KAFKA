@@ -41,7 +41,7 @@ public class TemplateProducerServiceImpl implements TemplateProducerService {
 
             @Override
             public void onSuccess(SendResult<String, Employee> result1) {
-                System.out.println(result1.getProducerRecord().value());
+                System.out.println("ANUBHAV producer" + result1.getProducerRecord().value());
                 pass[0] = true;
             }
         });
